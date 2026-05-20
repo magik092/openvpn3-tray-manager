@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=VPN Manager
+Comment=OpenVPN3 tray manager
+Exec=/usr/bin/python3 ~/vpn-manager/vpn-tray.py
+Icon=network-vpn
+Terminal=false
+Type=Application
+Categories=Network;
+StartupNotify=false
