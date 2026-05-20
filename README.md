@@ -1,33 +1,33 @@
 # OpenVPN3 Tray Manager
 
-Minimalna aplikacja w zasobniku systemowym do zarządzania połączeniem OpenVPN3 na Linuksie.
+A lightweight system tray application for managing OpenVPN3 connections on Linux.
 
-Wyświetla ikonę w trayu, pozwala połączyć/rozłączyć VPN jednym kliknięciem, obsługuje autoryzację OAuth (otwiera przeglądarkę) i powiadamia o błędach połączenia.
+Shows an icon in the system tray, lets you connect/disconnect with one click, handles OAuth authorization (opens browser), and sends desktop notifications on connection errors.
 
-![Zrzut ekranu ikony w zasobniku](https://via.placeholder.com/400x80?text=VPN+tray+icon)
+![Tray icon example](tray-example.png)
 
-## Wymagania
+## Requirements
 
-- Linux z pulpitem obsługującym **StatusNotifierItem** (KDE Plasma, GNOME z rozszerzeniem [AppIndicator](https://extensions.gnome.org/extension/615/appindicator-support/), XFCE, itp.)
-- [`openvpn3`](https://openvpn.net/cloud-docs/owner/connectors/connector-user-guides/openvpn-3-client-for-linux.html) – klient OpenVPN3 w wersji 3.x
-- Skonfigurowany profil VPN (`openvpn3 configs-list`)
+- Linux with a desktop supporting **StatusNotifierItem** (KDE Plasma, GNOME with [AppIndicator extension](https://extensions.gnome.org/extension/615/appindicator-support/), XFCE, etc.)
+- [`openvpn3`](https://openvpn.net/cloud-docs/owner/connectors/connector-user-guides/openvpn-3-client-for-linux.html) – OpenVPN3 Linux client (3.x)
+- A configured VPN profile (`openvpn3 configs-list`)
 - Python 3.9+
 
-### Zależności Pythona
+### Python dependencies
 
-| Pakiet | apt | pip |
-|--------|-----|-----|
+| Package | apt | pip |
+|---------|-----|-----|
 | `dbus-python` | `python3-dbus` | `dbus-python` |
 | `PyGObject` | `python3-gi` | `PyGObject` |
-| `Pillow` *(zalecane)* | `python3-pil` | `Pillow` |
+| `Pillow` *(recommended)* | `python3-pil` | `Pillow` |
 
-> Bez Pillow ikony ładowane są przez PyQt6 (fallback). Pillow jest szybsze i nie wymaga Qt.
+> Without Pillow, icons are loaded via PyQt6 (fallback). Pillow is faster and doesn't require Qt.
 
 ```bash
 sudo apt install python3-dbus python3-gi python3-pil
 ```
 
-## Instalacja
+## Installation
 
 ```bash
 git clone https://github.com/magik092/openvpn3-tray-manager.git ~/vpn-manager
@@ -35,49 +35,48 @@ cd ~/vpn-manager
 bash install.sh
 ```
 
-Skrypt zapyta o nazwę Twojego profilu VPN i skonfiguruje autostart. To jednorazowa akcja – przy każdym kolejnym logowaniu aplikacja uruchomi się automatycznie.
+The installer will ask for your VPN profile name and preferred language — a one-time setup. The app will then start automatically on every login.
 
-Aby sprawdzić nazwę swojego profilu:
+To check your profile name:
 
 ```bash
 openvpn3 configs-list
 ```
 
-## Uruchamianie ręczne
+## Supported languages
 
-```bash
-python3 ~/vpn-manager/vpn-tray.py
-```
+Polish · English · Deutsch · Italiano · Français · Čeština · Slovenčina · 中文（简体）
 
-## Zmiana profilu VPN
+## Changing settings
 
-Wystarczy ponownie uruchomić instalator:
+Just re-run the installer:
 
 ```bash
 bash ~/vpn-manager/install.sh
 ```
 
-## Funkcje
+## Features
 
-- 🟢 **Połączony** – zielona ikona, tooltip „VPN: Połączony ✓"
-- 🟠 **Łączenie** – pomarańczowa migająca ikona
-- 🔴 **Błąd** – czerwona migająca ikona + powiadomienie systemowe
-- 🔐 **OAuth** – przycisk w menu otwierający autoryzację w przeglądarce
-- **Restart sesji** – przycisk do resetowania zawieszonego połączenia
+- 🟢 **Connected** – green icon, tooltip "VPN: Connected ✓"
+- 🟠 **Connecting** – orange blinking icon
+- 🔴 **Error** – red blinking icon + desktop notification
+- 🔐 **OAuth** – menu button opens authorization in browser
+- **Restart session** – resets a stuck connection
 
-## Struktura plików
+## File structure
 
 ```
 vpn-manager/
-├── vpn-tray.py        # główny skrypt
-├── vpn-tray.desktop   # plik autostartu
-├── install.sh         # instalator
-├── icon_on.png        # ikona – połączony
-└── icon_off.png       # ikona – rozłączony
+├── vpn-tray.py        # main script
+├── vpn-tray.desktop   # autostart template
+├── install.sh         # installer
+├── icon_on.png        # icon – connected
+├── icon_off.png       # icon – disconnected
+└── tray-example.png   # screenshot
 ```
 
-Konfiguracja (nazwa profilu) zapisywana jest w `~/.config/vpn-manager/config`.
+Configuration (VPN profile name + language) is stored in `~/.config/vpn-manager/config`.
 
-## Licencja
+## License
 
 MIT

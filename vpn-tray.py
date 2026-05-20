@@ -26,23 +26,167 @@ SCRIPT_DIR    = os.path.dirname(os.path.abspath(__file__))
 
 _CONFIG_FILE = os.path.expanduser("~/.config/vpn-manager/config")
 
-def _load_config_name() -> str:
+def _load_config() -> tuple[str, str]:
     if os.path.isfile(_CONFIG_FILE):
+        vpn_name = ""
+        language = "pl"
         with open(_CONFIG_FILE) as f:
-            name = f.read().strip()
-        if name:
-            return name
+            for line in f:
+                line = line.strip()
+                if "=" in line:
+                    key, _, value = line.partition("=")
+                    key = key.strip()
+                    value = value.strip()
+                    if key == "vpn_profile":
+                        vpn_name = value
+                    elif key == "language":
+                        language = value
+        if vpn_name:
+            return (vpn_name, language)
     print(
-        f"Błąd: brak pliku konfiguracyjnego {_CONFIG_FILE}\n"
-        "Uruchom najpierw skrypt instalacyjny:\n"
+        f"Error: missing config file {_CONFIG_FILE}\n"
+        "Run the install script first:\n"
         "  bash install.sh",
         file=sys.stderr,
     )
     sys.exit(1)
 
-CONFIG_NAME = _load_config_name()
+CONFIG_NAME, LANGUAGE = _load_config()
 ICON_ON       = os.path.join(SCRIPT_DIR, "icon_on.png")
 ICON_OFF      = os.path.join(SCRIPT_DIR, "icon_off.png")
+
+TRANSLATIONS = {
+    "pl": {
+        "connect":           "Połącz VPN",
+        "disconnect":        "Rozłącz VPN",
+        "connecting":        "Trwa łączenie…",
+        "restart":           "Zrestartuj sesję",
+        "error_conn":        "❌ Błąd połączenia",
+        "open_auth":         "🔐 Otwórz autoryzację…",
+        "quit":              "Wyjdź",
+        "tooltip_conn":      "VPN: Połączony ✓",
+        "tooltip_connecting":"VPN: Łączenie…",
+        "tooltip_disc":      "VPN: Rozłączony",
+        "tooltip_error":     "VPN: Błąd – {msg}",
+        "tooltip_error_generic": "VPN: Błąd połączenia",
+        "notif_title":       "VPN: Błąd połączenia",
+        "notif_body":        "Nie udało się nawiązać połączenia VPN.",
+    },
+    "en": {
+        "connect":           "Connect VPN",
+        "disconnect":        "Disconnect VPN",
+        "connecting":        "Connecting…",
+        "restart":           "Restart session",
+        "error_conn":        "❌ Connection error",
+        "open_auth":         "🔐 Open authorization…",
+        "quit":              "Quit",
+        "tooltip_conn":      "VPN: Connected ✓",
+        "tooltip_connecting":"VPN: Connecting…",
+        "tooltip_disc":      "VPN: Disconnected",
+        "tooltip_error":     "VPN: Error – {msg}",
+        "tooltip_error_generic": "VPN: Connection error",
+        "notif_title":       "VPN: Connection error",
+        "notif_body":        "Failed to establish VPN connection.",
+    },
+    "de": {
+        "connect":           "VPN verbinden",
+        "disconnect":        "VPN trennen",
+        "connecting":        "Verbinde…",
+        "restart":           "Sitzung neu starten",
+        "error_conn":        "❌ Verbindungsfehler",
+        "open_auth":         "🔐 Autorisierung öffnen…",
+        "quit":              "Beenden",
+        "tooltip_conn":      "VPN: Verbunden ✓",
+        "tooltip_connecting":"VPN: Verbinde…",
+        "tooltip_disc":      "VPN: Getrennt",
+        "tooltip_error":     "VPN: Fehler – {msg}",
+        "tooltip_error_generic": "VPN: Verbindungsfehler",
+        "notif_title":       "VPN: Verbindungsfehler",
+        "notif_body":        "VPN-Verbindung konnte nicht hergestellt werden.",
+    },
+    "it": {
+        "connect":           "Connetti VPN",
+        "disconnect":        "Disconnetti VPN",
+        "connecting":        "Connessione in corso…",
+        "restart":           "Riavvia sessione",
+        "error_conn":        "❌ Errore di connessione",
+        "open_auth":         "🔐 Apri autorizzazione…",
+        "quit":              "Esci",
+        "tooltip_conn":      "VPN: Connesso ✓",
+        "tooltip_connecting":"VPN: Connessione…",
+        "tooltip_disc":      "VPN: Disconnesso",
+        "tooltip_error":     "VPN: Errore – {msg}",
+        "tooltip_error_generic": "VPN: Errore di connessione",
+        "notif_title":       "VPN: Errore di connessione",
+        "notif_body":        "Impossibile stabilire la connessione VPN.",
+    },
+    "fr": {
+        "connect":           "Connecter VPN",
+        "disconnect":        "Déconnecter VPN",
+        "connecting":        "Connexion en cours…",
+        "restart":           "Redémarrer la session",
+        "error_conn":        "❌ Erreur de connexion",
+        "open_auth":         "🔐 Ouvrir l'autorisation…",
+        "quit":              "Quitter",
+        "tooltip_conn":      "VPN : Connecté ✓",
+        "tooltip_connecting":"VPN : Connexion…",
+        "tooltip_disc":      "VPN : Déconnecté",
+        "tooltip_error":     "VPN : Erreur – {msg}",
+        "tooltip_error_generic": "VPN : Erreur de connexion",
+        "notif_title":       "VPN : Erreur de connexion",
+        "notif_body":        "Impossible d'établir la connexion VPN.",
+    },
+    "cs": {
+        "connect":           "Připojit VPN",
+        "disconnect":        "Odpojit VPN",
+        "connecting":        "Připojování…",
+        "restart":           "Restartovat relaci",
+        "error_conn":        "❌ Chyba připojení",
+        "open_auth":         "🔐 Otevřít autorizaci…",
+        "quit":              "Ukončit",
+        "tooltip_conn":      "VPN: Připojeno ✓",
+        "tooltip_connecting":"VPN: Připojování…",
+        "tooltip_disc":      "VPN: Odpojeno",
+        "tooltip_error":     "VPN: Chyba – {msg}",
+        "tooltip_error_generic": "VPN: Chyba připojení",
+        "notif_title":       "VPN: Chyba připojení",
+        "notif_body":        "Nepodařilo se navázat připojení VPN.",
+    },
+    "sk": {
+        "connect":           "Pripojiť VPN",
+        "disconnect":        "Odpojiť VPN",
+        "connecting":        "Pripájanie…",
+        "restart":           "Reštartovať reláciu",
+        "error_conn":        "❌ Chyba pripojenia",
+        "open_auth":         "🔐 Otvoriť autorizáciu…",
+        "quit":              "Ukončiť",
+        "tooltip_conn":      "VPN: Pripojené ✓",
+        "tooltip_connecting":"VPN: Pripájanie…",
+        "tooltip_disc":      "VPN: Odpojené",
+        "tooltip_error":     "VPN: Chyba – {msg}",
+        "tooltip_error_generic": "VPN: Chyba pripojenia",
+        "notif_title":       "VPN: Chyba pripojenia",
+        "notif_body":        "Nepodarilo sa nadviazať pripojenie VPN.",
+    },
+    "zh": {
+        "connect":           "连接 VPN",
+        "disconnect":        "断开 VPN",
+        "connecting":        "正在连接…",
+        "restart":           "重启会话",
+        "error_conn":        "❌ 连接错误",
+        "open_auth":         "🔐 打开授权…",
+        "quit":              "退出",
+        "tooltip_conn":      "VPN：已连接 ✓",
+        "tooltip_connecting":"VPN：连接中…",
+        "tooltip_disc":      "VPN：已断开",
+        "tooltip_error":     "VPN：错误 – {msg}",
+        "tooltip_error_generic": "VPN：连接错误",
+        "notif_title":       "VPN：连接错误",
+        "notif_body":        "无法建立 VPN 连接。",
+    },
+}
+
+T = TRANSLATIONS.get(LANGUAGE, TRANSLATIONS["pl"])
 
 # Stany połączenia VPN
 ST_CONNECTED    = "connected"
@@ -222,22 +366,22 @@ class DbusMenu(dbus.service.Object):
     def GetLayout(self, parentId, recursionDepth, propertyNames):
         items = []
         if self._status == ST_CONNECTED:
-            items.append(self._item(self._ID_TOGGLE, {"label": "Rozłącz VPN",       "enabled": dbus.Boolean(True)}))
+            items.append(self._item(self._ID_TOGGLE, {"label": T["disconnect"],  "enabled": dbus.Boolean(True)}))
         elif self._status == ST_CONNECTING:
             if self._auth_url:
-                items.append(self._item(self._ID_OPEN_URL, {"label": "🔐 Otwórz autoryzację…", "enabled": dbus.Boolean(True)}))
+                items.append(self._item(self._ID_OPEN_URL, {"label": T["open_auth"], "enabled": dbus.Boolean(True)}))
             else:
-                items.append(self._item(5, {"label": "Trwa łączenie…",              "enabled": dbus.Boolean(False)}))
+                items.append(self._item(5, {"label": T["connecting"],            "enabled": dbus.Boolean(False)}))
             if self._status_msg:
-                items.append(self._item(6, {"label": self._status_msg,              "enabled": dbus.Boolean(False)}))
-            items.append(self._item(self._ID_KILL,   {"label": "Zrestartuj sesję",  "enabled": dbus.Boolean(True)}))
+                items.append(self._item(6, {"label": self._status_msg,           "enabled": dbus.Boolean(False)}))
+            items.append(self._item(self._ID_KILL,   {"label": T["restart"],     "enabled": dbus.Boolean(True)}))
         elif self._status == ST_ERROR:
-            items.append(self._item(7, {"label": "❌ Błąd połączenia",              "enabled": dbus.Boolean(False)}))
-            items.append(self._item(self._ID_KILL,   {"label": "Zrestartuj sesję",  "enabled": dbus.Boolean(True)}))
+            items.append(self._item(7, {"label": T["error_conn"],                "enabled": dbus.Boolean(False)}))
+            items.append(self._item(self._ID_KILL,   {"label": T["restart"],     "enabled": dbus.Boolean(True)}))
         else:
-            items.append(self._item(self._ID_TOGGLE, {"label": "Połącz VPN",        "enabled": dbus.Boolean(True)}))
+            items.append(self._item(self._ID_TOGGLE, {"label": T["connect"],     "enabled": dbus.Boolean(True)}))
         items.append(self._item(self._ID_SEP,  {"type": "separator"}))
-        items.append(self._item(self._ID_QUIT, {"label": "Wyjdź",              "enabled": dbus.Boolean(True)}))
+        items.append(self._item(self._ID_QUIT, {"label": T["quit"],              "enabled": dbus.Boolean(True)}))
         root = dbus.Struct(
             (dbus.Int32(0), dbus.Dictionary({}, signature="sv"), dbus.Array(items, signature="(ia{sv}av)")),
             signature=None,
@@ -307,22 +451,22 @@ class StatusNotifierItem(dbus.service.Object):
     def GetAll(self, iface):
         if self._status == ST_CONNECTED:
             sni_status  = "Active"
-            tooltip     = "VPN: Połączony ✓"
+            tooltip     = T["tooltip_conn"]
             icon_pixmap = self._px_on
             attn_pixmap = self._px_on
         elif self._status == ST_CONNECTING:
             sni_status  = "NeedsAttention"   # tray mruga między icon a attn_icon
-            tooltip     = "VPN: Łączenie…"
+            tooltip     = T["tooltip_connecting"]
             icon_pixmap = self._px_off        # szary (bazowy)
             attn_pixmap = self._px_connect    # pomarańczowy (mruga)
         elif self._status == ST_ERROR:
             sni_status  = "NeedsAttention"
-            tooltip     = f"VPN: Błąd – {self._menu._status_msg}" if self._menu._status_msg else "VPN: Błąd połączenia"
+            tooltip     = T["tooltip_error"].format(msg=self._menu._status_msg) if self._menu._status_msg else T["tooltip_error_generic"]
             icon_pixmap = self._px_off        # szary (bazowy)
             attn_pixmap = self._px_error      # czerwony (mruga)
         else:
             sni_status  = "Passive"
-            tooltip     = "VPN: Rozłączony"
+            tooltip     = T["tooltip_disc"]
             icon_pixmap = self._px_off
             attn_pixmap = self._px_off
         return dbus.Dictionary({
@@ -416,8 +560,8 @@ class VpnManager:
         self._sni.set_state(status, msg, auth_url)
         if status == ST_ERROR and prev != ST_ERROR:
             self._notify(
-                "VPN: Błąd połączenia",
-                msg if msg else "Nie udało się nawiązać połączenia VPN.",
+                T["notif_title"],
+                msg if msg else T["notif_body"],
                 "dialog-error",
             )
 
